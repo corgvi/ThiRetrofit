@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,6 +103,7 @@ public class MotoAdapter extends RecyclerView.Adapter<MotoAdapter.MotoViewHolder
                                     public void onResponse(Call<Moto> call, Response<Moto> response) {
                                         if (response.isSuccessful()) {
                                             Toast.makeText(mContext, "Delete " + response.body().getName() + " successful", Toast.LENGTH_SHORT).show();
+                                            getMoto();
                                         }
                                     }
 
@@ -145,5 +147,27 @@ public class MotoAdapter extends RecyclerView.Adapter<MotoAdapter.MotoViewHolder
             btnSua = itemView.findViewById(R.id.btn_sua);
             btnXoa = itemView.findViewById(R.id.btn_xoa);
         }
+    }
+
+    private void getMoto(){
+        Gson gson =new GsonBuilder().setLenient().create();
+        Retrofit retrofit =new Retrofit.Builder()
+                .baseUrl(BaseURL.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        ResponseApi responseApi = retrofit.create(ResponseApi.class);
+        Call<List<Moto>> motos = responseApi.getMotos();
+        motos.enqueue(new Callback<List<Moto>>() {
+            @Override
+            public void onResponse(Call<List<Moto>> call, Response<List<Moto>> response) {
+                listMoto = response.body();
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<List<Moto>> call, Throwable t) {
+                Log.d("TAG", "onFailure: " + t.getMessage());
+            }
+        });
     }
 }

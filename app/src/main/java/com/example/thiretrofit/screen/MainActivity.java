@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Moto> call, Response<Moto> response) {
                 Log.d("TAG", "post: " + response.body().toString());
+                getMoto();
             }
 
             @Override
